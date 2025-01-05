@@ -4,7 +4,7 @@ pipeline {
     stage('Git Checkout') {
       steps {
         echo 'Checkout...'
-        git(url: 'https://github.com/thedauke/cicd-pipeline.git', branch: 'main', poll: true)
+        git(url: 'https://github.com/thedauke/cicd-pipeline.git', branch: 'main')
       }
     }
 
