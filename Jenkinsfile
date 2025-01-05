@@ -1,10 +1,5 @@
 pipeline {
   agent any
-  environment {
-    IMAGE_NAME = 'tdads_cicd'
-    IMAGE_TAG = '1.0'
-  }
-  
   stages {
     stage('Git Checkout') {
       steps {
@@ -13,7 +8,7 @@ pipeline {
       }
     }
 
-    stage('Build') {
+    stage('Application Build') {
       steps {
         echo 'Building...'
         sh 'chmod +x scripts/build.sh'
@@ -21,7 +16,7 @@ pipeline {
       }
     }
 
-    stage('Test') {
+    stage('Tests') {
       steps {
         echo 'Testing...'
         sh 'chmod +x scripts/test.sh'
@@ -29,26 +24,34 @@ pipeline {
       }
     }
 
-    stage('Docker Build') {
+    stage('Docker Image Build') {
       steps {
         echo 'Building Docker image...'
         script {
           sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
         }
+
       }
     }
 
-    stage('Docker Push') {
+    stage('Docker Image Push') {
       steps {
         echo 'Pushing Docker image...'
         script {
           docker.withRegistry('https://registry.hub.docker.com', '14') {
+            sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
             sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
             sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest"
             sh "docker push ${IMAGE_NAME}:latest"
           }
         }
+
       }
     }
+
+  }
+  environment {
+    IMAGE_NAME = 'tdads_cicd'
+    IMAGE_TAG = '1.0'
   }
 }
