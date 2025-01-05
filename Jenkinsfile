@@ -39,6 +39,7 @@ pipeline {
         echo 'Pushing Docker image...'
         script {
           docker.withRegistry('https://registry.hub.docker.com', '14') {
+            def app = docker.image("${IMAGE_NAME}:${IMAGE_TAG}")
             app.push("${IMAGE_TAG}")
             app.push('latest')
           }
@@ -49,7 +50,7 @@ pipeline {
 
   }
   environment {
-    IMAGE_NAME = 'tdads_cicd'
+    IMAGE_NAME = 'tdads/cicd'
     IMAGE_TAG = '1.0'
   }
 }
