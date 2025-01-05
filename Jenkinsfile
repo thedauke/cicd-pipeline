@@ -39,10 +39,9 @@ pipeline {
         echo 'Pushing Docker image...'
         script {
           docker.withRegistry('https://registry.hub.docker.com', '14') {
-            sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-            sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
-            sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest"
-            sh "docker push ${IMAGE_NAME}:latest"
+            def app = docker.image("${IMAGE_NAME}:${IMAGE_TAG}")
+            app.push("${IMAGE_TAG}")
+            app.push('latest')
           }
         }
 
